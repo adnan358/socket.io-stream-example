@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		.top-margin {
+			margin-top: 20px;
+		}
+
+		a{
+			color:#FFF !important;
+		}
+
+	</style>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+	<div class="container">
+
+		<div class="row">
+			<div class="col-md-6 top-margin">
+				<input type="file" id="file" class="form-control"><br>
+				<button class="btn btn-default" id="start">Upload Start</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 top-margin">
+				<div class="progress">
+					<div class="progress-bar progress-bar-info progress-bar-striped active" id="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+						
+					</div>
+				</div>
+			</div>
+			
+		</div>
+
+		<h2>Stream File Upload</h2>
+		<div class="row">
+			<div class="col-md-12">
+				<ul class="list-group" id="file_list"></ul>				
+			</div>
+		</div>
+
+	</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/socket.io-stream.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+	var socket = io();
+
+	$("#start").click(function () {
+		$("#file").submit();
+	});
+
+	$("#file").change(function(event) {
+		$("#progress").css('width', '0%');
+		$("#progress").html("");
+	});
+
+
+	socket.on('disconnect',function(){
+		$("#file_list").html("");
+	})
+
+	socket.on('file_list',function(file){
+		var append = '<li class="list-group-item">'+file+'<span class="badge"><a href="'+file+'" id="del">Sil</a></span><span class="badge"><a target="_blank" download="'+file+'" href="/files/'+file+'">İndir</a></span></li>';
+		$("#file_list").append(append);
+	});
+
+	$("#file_list").delegate('#del', 'click', function(event) {
+		$(this).parent().parent().slideUp(200,function(){
+			$(this).remove();
+		});
+		var filename = $(this).attr("href");
+		socket.emit("del",{name:filename});
+		return false;
+	});
+
+
+	$("#file").submit(function(event){
+		var file = event.target.files[0];
+		var stream = ss.createStream();
+
+		ss(socket).emit('file',stream,{name: file.name});
+		ss.createBlobReadStream(file).pipe(stream);
+
+
+
+
+		var blobStream = ss.createBlobReadStream(file);
+    	var size = 0;
+
+    	blobStream.on("data",function (chunk) {
+    		$("#progress").css('width', '0%');
+    		size+= chunk.length;
+    		var uploads = Math.floor(size / file.size * 100);
+    		$("#progress").css('width', uploads+'%');
+    		$("#progress").html(uploads+"%");
+    		//console.log(Math.floor(size / file.size * 100) + '%');
+    	});
+
+    	blobStream.on("end",function(){
+			$("#progress").removeClass('progress-bar-info');
+    		$("#progress").addClass('progress-bar-success');
+    		$("#progress").html("Successfuly");
+    	});
+	});
+
+
+</script>
+</body>
+</html>

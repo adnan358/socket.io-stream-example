@@ -1,0 +1,26 @@
+{
+  "name": "socket-stream",
+  "version": "1.0.0",
+  "description": "Node.js will be use the socket.io-stream for file upload",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adnan358"
+  },
+  "keywords": [
+    "socket.io",
+    "node.js",
+    "socket.io-stream"
+  ],
+  "author": "Adnan Bilac",
+  "license": "ISC",
+  "devDependencies": {
+    "express": "^4.14.0",
+    "express.io": "^1.1.13",
+    "socket.io": "^1.7.2",
+    "socket.io-stream": "^0.9.1"
+  }
+}
