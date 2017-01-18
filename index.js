@@ -42,6 +42,10 @@ io.on('connection',function (socket) {
 		});
 	});
 
+	socket.on('file_list',function(){
+		fileList();
+	});
+
 	ss(socket).on('file',function(stream, data){
 		var filename = path.basename(data.name);
 		stream.pipe(fs.createWriteStream('files/'+filename));

@@ -50,7 +50,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
 	var socket = io();
-
+	var listelenen = [];
 	$("#start").click(function () {
 		$("#file").submit();
 	});
@@ -66,6 +66,10 @@
 	})
 
 	socket.on('file_list',function(file){
+		if(listelenen.indexOf(file) > -1)
+			return false;
+
+		listelenen.push(file);
 		var append = '<li class="list-group-item">'+file+'<span class="badge"><a href="'+file+'" id="del">Sil</a></span><span class="badge"><a target="_blank" download="'+file+'" href="/files/'+file+'">İndir</a></span></li>';
 		$("#file_list").append(append);
 	});
@@ -106,6 +110,7 @@
 			$("#progress").removeClass('progress-bar-info');
     		$("#progress").addClass('progress-bar-success');
     		$("#progress").html("Successfuly");
+    		socket.emit('file_list');
     	});
 	});
 
