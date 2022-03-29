@@ -21,9 +21,12 @@ http.listen(8080,function (socket) {
 
 function fileList(){
 	fs.readdir(folder,function (err,files) {
-		files.forEach(function (item, index) {
-			io.emit('file_list',item);
-		});
+		if (!err) {
+			files.forEach(function (item, index) {
+						io.emit('file_list',item);
+					});
+		}
+		
 	});
 }
 
